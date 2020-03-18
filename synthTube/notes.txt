@@ -23,3 +23,9 @@ findstr "[0-9]:[0-9] "  "ola.txt"
 
 5. Obtener el número de canciones
   type songs2.txt | find /C /V ""
+
+6. Rangos de canciones con nombre propio
+
+  youtube-dl -x --postprocessor-args "-ss 00:00 -to 02:39" --audio-format mp3 --output "ola_2.mp3" https://www.youtube.com/watch?v=ZXfBHCbG2o8
+
+  ffmpeg -ss 00:00 -i "mySuperVideo.m4a" -to 02:38 ola_2.mp3
