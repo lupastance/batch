@@ -6,6 +6,7 @@
 *.mkv
 *.ogg
 *.m4a
+*.jpg
 
 #FOLDERS
 bin/**

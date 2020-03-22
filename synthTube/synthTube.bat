@@ -98,5 +98,6 @@ endlocal
 
 MOVE "cover.jpg" "%title%" > NUL
 DEL *.txt
+MOVE "%title%" ..\ > NUL
 
 CD..
