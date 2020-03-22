@@ -18,9 +18,9 @@ IF [%2%]==[] (
 CD bin
 
 ECHO // Getting title
-%main% -e %url% > title.txt
+%main% -q -e %url% > title.txt
 
-FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -e %url%`) DO (
+FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -q -e %url%`) DO (
   SET title=%%F
 )
 
@@ -40,9 +40,11 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`type songs.txt ^| find /C /V ""`) DO (
   SET nsongs=%%F
 )
 
+CLS
+
 ECHO.
-ECHO SONGS: %nsongs%
-ECHO.
+ECHO # SONGS: %nsongs%
+ECHO # ALBUM: %title%
 
 MKDIR "%title%"
 CALL DEL "%title%-%url%.description"
@@ -67,19 +69,23 @@ FOR /L %%b in (1,1,%nsongs%) do (
   SET end=%%elem[!x!]%%
   SET output="%title%\%title%_%%b.%format%"
 
-  ECHO ------------------------------
-  ECHO STARTING Track %%b/%nsongs% at !ini!
+  ECHO.
+  ECHO CONVERTING Track %%b/%nsongs%
 
   IF %%b LSS %nsongs% (    
-    CALL ECHO ENDING Track %%b/%nsongs% at !end!
-    ECHO ------------------------------
+    CALL ECHO from !ini! to !end!
     REM CALL ffmpeg -i "%ofile%" -i cover.jpg -map 0 -map 1 -ss !ini! -to !end! !output!
-    CALL ffmpeg -i "%ofile%" -ss !ini! -to !end! !output!
+    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! -to !end! !output!
+
+    ECHO.
+    ECHO --------^| Track %%b converted ^|--------
     
   ) ELSE (
-    CALL ECHO Until the end
-    ECHO ------------------------------
-    CALL ffmpeg -i "%ofile%" -ss !ini! !output!
+    CALL ECHO from !ini! until the end
+    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! !output!
+    
+    ECHO.
+    ECHO --------^| Track %%b converted ^|--------
     
     :: Borrar el archivo bajado
     CALL DEL "%ofile%"

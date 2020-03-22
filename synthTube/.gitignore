@@ -1,3 +1,4 @@
+#MEDIA
 *.exe
 *.mp3
 *.avi
@@ -5,3 +6,6 @@
 *.mkv
 *.ogg
 *.m4a
+
+#FOLDERS
+bin/**
