@@ -6,35 +6,41 @@ CLS
 
 SET url=%1%
 SET main=youtube-dl.exe
+SET encoder=SynthTube by Lupa Stance
 
 IF [%2%]==[] (
   SET format=mp3
-  ECHO No output format specified, setting it to %format%
+  ECHO No output format specified, setting it to MP3
 ) ELSE (
   SET format=%2%
-  ECHO Output format selected: %format%
+  ECHO Output format selected: %2%
 )
 
 CD bin
 
 ECHO // Getting title
-%main% -q -e %url% > title.txt
 
 FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -q -e %url%`) DO (
   SET title=%%F
 )
 
+ECHO // Getting uploader
+
+FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -j %url% ^| python.exe -c "import sys, json; print(json.load(sys.stdin)['uploader'])"`) DO (
+  SET uploader=%%F
+)
+
 ECHO // Getting video description ^& thumbnail
+
 %main% -x --write-description --write-thumbnail %url%
 REN "%title%-%url%.jpg" "cover.jpg"
-
 
 FOR /F "delims=" %%a IN ('dir /b *.description') DO (
   SET "filename=%%a"
 )
 
+:: Filtering list song's list
 findstr "[0-9]:[0-9] "  "%filename%" > songs.txt
-REM (FOR /F %%A In (songs.txt) Do @SET "_=%%A"&CALL ECHO ^%%_:~-5^%%) > times.txt
 
 FOR /F "tokens=* USEBACKQ" %%F IN (`type songs.txt ^| find /C /V ""`) DO (
   SET nsongs=%%F
@@ -45,6 +51,7 @@ CLS
 ECHO.
 ECHO # SONGS: %nsongs%
 ECHO # ALBUM: %title%
+ECHO # UPLOADER: %uploader%
 
 MKDIR "%title%"
 CALL DEL "%title%-%url%.description"
@@ -68,27 +75,27 @@ FOR /L %%b in (1,1,%nsongs%) do (
   SET ini=!elem[%%b]!
   SET end=%%elem[!x!]%%
   SET output="%title%\%title%_%%b.%format%"
+  SET metadata=-metadata album="%title%" -metadata album_artist="Various Artists" -metadata artist="%uploader%" -metadata comment="%encoder%" -metadata track="%%b/%nsongs%" -metadata author_url="https://www.youtube.com/watch?v=%url%"
 
   ECHO.
   ECHO CONVERTING Track %%b/%nsongs%
 
   IF %%b LSS %nsongs% (    
     CALL ECHO from !ini! to !end!
-    REM CALL ffmpeg -i "%ofile%" -i cover.jpg -map 0 -map 1 -ss !ini! -to !end! !output!
-    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! -to !end! !output!
+    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! -to !end! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 !output!
 
     ECHO.
     ECHO --------^| Track %%b converted ^|--------
     
   ) ELSE (
     CALL ECHO from !ini! until the end
-    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! !output!
+    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 !output!
     
     ECHO.
     ECHO --------^| Track %%b converted ^|--------
     
-    :: Borrar el archivo bajado
-    CALL DEL "%ofile%"
+    :: Delte downloaded audio file
+    REM CALL DEL "%ofile%"
   )
   
   SET /A x+=1
