@@ -1,36 +1,26 @@
-:: ZXfBHCbG2o8
-:: with special characters fzK79PgKITI
-
 @ECHO off
 CLS
 
 SET url=%1%
 SET main=youtube-dl.exe
 SET encoder=SynthTube by Lupa Stance
-
-IF [%2%]==[] (
-  SET format=mp3
-  ECHO No output format specified, setting it to MP3
-) ELSE (
-  SET format=%2%
-  ECHO Output format selected: %2%
-)
+SET format=mp3
 
 CD bin
 
-ECHO // Getting title
+ECHO /// Getting title
 
 FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -q -e %url%`) DO (
   SET title=%%F
 )
 
-ECHO // Getting uploader
+ECHO /// Getting uploader
 
 FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -j %url% ^| python.exe -c "import sys, json; print(json.load(sys.stdin)['uploader'])"`) DO (
   SET uploader=%%F
 )
 
-ECHO // Getting video description ^& thumbnail
+ECHO /// Getting video description ^& thumbnail
 
 %main% -x --write-description --write-thumbnail %url%
 REN "%title%-%url%.jpg" "cover.jpg"
@@ -95,7 +85,7 @@ FOR /L %%b in (1,1,%nsongs%) do (
     ECHO --------^| Track %%b converted ^|--------
     
     :: Delte downloaded audio file
-    REM CALL DEL "%ofile%"
+    CALL DEL "%ofile%"
   )
   
   SET /A x+=1
