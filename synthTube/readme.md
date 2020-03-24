@@ -1,8 +1,8 @@
-<style>
+<!-- <style>
     h1{ border-bottom: none; line-height: 0px; font-weight: 700}
     h4 { line-height: 0px; letter-spacing: 3.7px; font-weight: 100; font-style: italic; }
     hr { margin-bottom: 40px; }
-</style>
+</style> -->
 
 <!-- --------------------------------------------------- -->
 
