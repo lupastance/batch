@@ -6,7 +6,7 @@
 
 <!-- --------------------------------------------------- -->
 
-<h1 style="border-bottom: none; line-height: 0px; font-weight: 700;">SynthTube</h1>
+# SynthTube
 #### by Lupa Stance
 
 <hr>
