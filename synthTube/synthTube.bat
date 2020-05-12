@@ -22,7 +22,7 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -j %url% ^| python.exe -c "import sys
 
 ECHO /// Getting video description ^& thumbnail
 
-%main% -x --write-description --write-thumbnail %url%
+%main% --rm-cache-dir -x --write-description --write-thumbnail %url%
 REN "%title%-%url%.jpg" "cover.jpg"
 
 FOR /F "delims=" %%a IN ('dir /b *.description') DO (
