@@ -8,12 +8,6 @@ SET format=mp3
 
 CD bin
 
-ECHO /// Getting title
-
-FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -q -e %url%`) DO (
-  SET title=%%F
-)
-
 ECHO /// Getting uploader
 
 FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -j %url% ^| python.exe -c "import sys, json; print(json.load(sys.stdin)['uploader'])"`) DO (
@@ -23,11 +17,16 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`%main% -j %url% ^| python.exe -c "import sys
 ECHO /// Getting video description ^& thumbnail
 
 %main% --rm-cache-dir -x --write-description --write-thumbnail %url%
-REN "%title%-%url%.jpg" "cover.jpg"
 
 FOR /F "delims=" %%a IN ('dir /b *.description') DO (
   SET "filename=%%a"
 )
+
+FOR /f "tokens=1 delims=." %%a IN ("%filename%") do (
+  SET title=%%a
+)
+
+REN "%title%.jpg" "cover.jpg"
 
 :: Filtering list song's list
 findstr "[0-9]:[0-9] "  "%filename%" > songs.txt
@@ -44,8 +43,7 @@ ECHO # ALBUM: %title%
 ECHO # UPLOADER: %uploader%
 
 MKDIR "%title%"
-CALL DEL "%title%-%url%.description"
-CALL DIR /B "%title%-%url%.*" > ofile.txt
+CALL DIR /B "%title%.opus" > ofile.txt
 
 FOR /F "delims=" %%a IN ('type ofile.txt') DO (
   SET ofile=%%a
@@ -64,6 +62,7 @@ FOR /F %%a in (songs.txt) do (
 FOR /L %%b in (1,1,%nsongs%) do (
   SET ini=!elem[%%b]!
   SET end=%%elem[!x!]%%
+
   SET output="%title%\%title%_%%b.%format%"
   SET metadata=-metadata album="%title%" -metadata album_artist="Various Artists" -metadata artist="%uploader%" -metadata comment="%encoder%" -metadata track="%%b/%nsongs%" -metadata author_url="https://www.youtube.com/watch?v=%url%"
 
@@ -85,7 +84,7 @@ FOR /L %%b in (1,1,%nsongs%) do (
     ECHO --------^| Track %%b converted ^|--------
     
     :: Delte downloaded audio file
-    CALL DEL "%ofile%"
+    REM CALL DEL "%ofile%"
   )
   
   SET /A x+=1
@@ -95,6 +94,7 @@ endlocal
 
 MOVE "cover.jpg" "%title%" > NUL
 DEL *.txt
+DEL "%title%.*"
 MOVE "%title%" ..\ > NUL
 
 CD..
