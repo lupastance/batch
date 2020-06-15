@@ -43,7 +43,11 @@ ECHO # ALBUM: %title%
 ECHO # UPLOADER: %uploader%
 
 MKDIR "%title%"
-CALL DIR /B "%title%.opus" > ofile.txt
+IF EXIST "%title%.opus" (
+  CALL DIR /B "%title%.opus" > ofile.txt
+) ELSE (
+  CALL DIR /B "%title%.m4a" > ofile.txt
+)
 
 FOR /F "delims=" %%a IN ('type ofile.txt') DO (
   SET ofile=%%a
@@ -84,7 +88,7 @@ FOR /L %%b in (1,1,%nsongs%) do (
     ECHO --------^| Track %%b converted ^|--------
     
     :: Delte downloaded audio file
-    REM CALL DEL "%ofile%"
+    CALL DEL "%ofile%"
   )
   
   SET /A x+=1
