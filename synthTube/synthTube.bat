@@ -1,6 +1,8 @@
 @ECHO off
 CLS
 
+setlocal EnableDelayedExpansion
+
 SET url=%1%
 SET main=youtube-dl.exe
 SET encoder=SynthTube by Lupa Stance
@@ -26,17 +28,17 @@ FOR /f "tokens=1 delims=." %%a IN ("%filename%") do (
   SET title=%%a
 )
 
-IF EXIST "%title%.webp" (
-  SET cover=%title%.webp
-  CALL ffmpeg -i "%cover%" "cover.jpg"
+IF EXIST "!title!.webp" (
+  SET cover=!title!.webp
+  CALL ffmpeg -loglevel panic -hide_banner -i "!cover!" "cover.jpg"
 
-) ELSE IF EXIST "%title%.png" (
-  SET cover=%title%.png
-  CALL ffmpeg -i "%cover%" "cover.jpg"
+) ELSE IF EXIST "!title!.png" (
+  SET cover=!title!.png
+  CALL ffmpeg -loglevel panic -hide_banner -i "!cover!" "cover.jpg"
 
 ) ELSE (
-  SET cover=%title%.jpg
-  CALL ffmpeg -i "%cover%" "cover.jpg"
+  SET cover=!title!.jpg
+  CALL ffmpeg -loglevel panic -hide_banner -i "!cover!" "cover.jpg"
 )
 
 :: Filtering list song's list
@@ -49,16 +51,16 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`type songs.txt ^| find /C /V ""`) DO (
 CLS
 
 ECHO.
-ECHO # SONGS: %nsongs%
-ECHO # ALBUM: %title%
-ECHO # UPLOADER: %uploader%
+ECHO # SONGS: !nsongs!
+ECHO # ALBUM: !title!
+ECHO # UPLOADER: !uploader!
 
-MKDIR "%title%"
+MKDIR "!title!"
 
-IF EXIST "%title%.opus" (
-  CALL DIR /B "%title%.opus" > ofile.txt
+IF EXIST "!title!.opus" (
+  CALL DIR /B "!title!.opus" > ofile.txt
 ) ELSE (
-  CALL DIR /B "%title%.m4a" > ofile.txt
+  CALL DIR /B "!title!.m4a" > ofile.txt
 )
 
 FOR /F "delims=" %%a IN ('type ofile.txt') DO (
@@ -68,53 +70,50 @@ FOR /F "delims=" %%a IN ('type ofile.txt') DO (
 SET i=1
 SET x=2
 
-setlocal EnableDelayedExpansion
-
 FOR /F %%a in (songs.txt) do (
   SET elem[!i!]=%%a
   SET /A i+=1
 )
 
-FOR /L %%b in (1,1,%nsongs%) do (
+FOR /L %%b in (1,1,!nsongs!) do (
   SET ini=!elem[%%b]!
   SET end=%%elem[!x!]%%
 
-  SET output=%title%\%title%_%%b.%format%
-  SET metadata=-metadata album="%title%" -metadata album_artist="Various Artists" -metadata artist="%uploader%" -metadata comment="%encoder%" -metadata track="%%b/%nsongs%" -metadata author_url="https://www.youtube.com/watch?v=%url%"
+  SET output=!title!\!title!_%%b.%format%
+  SET metadata=-metadata album="!title!" -metadata album_artist="Various Artists" -metadata artist="!uploader!" -metadata comment="!encoder!" -metadata track="%%b/!nsongs!" -metadata author_url="https://www.youtube.com/watch?v=!url!"
 
   ECHO.
-  ECHO CONVERTING Track %%b/%nsongs%
+  ECHO CONVERTING Track %%b/!nsongs!
 
   IF %%b EQU 1 (
-    MKDIR "..\%title%"
+    MKDIR "..\!title!"
   )
 
-  IF %%b LSS %nsongs% (    
+  IF %%b LSS !nsongs! (
     CALL ECHO from !ini! to !end!
-    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! -to !end! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 "!output!"
+    CALL ffmpeg -loglevel panic -hide_banner -i "!ofile!" -ss !ini! -to !end! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 "!output!"
 
     ECHO.
     ECHO --------^| Track %%b converted ^|--------
     
   ) ELSE (
     CALL ECHO from !ini! until the end
-    CALL ffmpeg -hide_banner -loglevel panic -i "%ofile%" -ss !ini! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 "!output!"
+    CALL ffmpeg -loglevel panic -hide_banner -i "!ofile!" -ss !ini! !metadata! -c:a libmp3lame -b:a 256k -id3v2_version 3 -write_id3v1 1 "!output!"
     
     ECHO.
     ECHO --------^| Track %%b converted ^|--------
   )
 
-  CALL ffmpeg -loglevel panic -i "!output!" -i cover.jpg -map 0 -map 1 -c copy -c:v:1 jpg -disposition:v:1 attached_pic "..\!output!"
+  CALL ffmpeg -loglevel panic -hide_banner -i "!output!" -i cover.jpg -map 0 -map 1 -c copy -c:v:1 jpg -disposition:v:1 attached_pic "..\!output!"
   
   SET /A x+=1
 )
 
-endlocal
 
-DEL "%ofile%"
-DEL cover.jpg
+DEL "!ofile!"
+DEL "!title!.*"
 DEL *.txt
-DEL "%title%.*"
-RMDIR /Q /S "%title%"
+DEL cover.jpg
+RMDIR /Q /S "!title!"
 
-CD..
+endlocal
