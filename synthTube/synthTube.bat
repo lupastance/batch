@@ -86,7 +86,7 @@ FOR /L %%b in (1,1,!nsongs!) do (
   ECHO CONVERTING Track %%b/!nsongs!
 
   IF %%b EQU 1 (
-    MKDIR "..\!title!"
+    MKDIR "..\!uploader!\!title!"
   )
 
   IF %%b LSS !nsongs! (
@@ -104,7 +104,7 @@ FOR /L %%b in (1,1,!nsongs!) do (
     ECHO --------^| Track %%b converted ^|--------
   )
 
-  CALL ffmpeg -loglevel panic -hide_banner -i "!output!" -i cover.jpg -map 0 -map 1 -c copy -c:v:1 jpg -disposition:v:1 attached_pic "..\!output!"
+  CALL ffmpeg -loglevel panic -hide_banner -i "!output!" -i cover.jpg -map 0 -map 1 -c copy -c:v:1 jpg -disposition:v:1 attached_pic "..\!uploader!\!output!"
   
   SET /A x+=1
 )
