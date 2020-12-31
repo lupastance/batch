@@ -46,7 +46,7 @@ The script will create 14 different tracks in mp3 format.
 - Windows 7 or above
 - Youtube-dl (included)
 - FFmpeg (included)
-- Python 2
+- Python 2 or above
 
 ## Usage
 
@@ -59,8 +59,8 @@ synthTube.bat ZXfBHCbG2o8
 Please mind, don't use full url format https://www.youtube.com/watch?v=ZXfBHCbG2o8, just the code after "v="
 
 ## Future Implementations
-- Thumbnail embedded (due to a bug in ffmpeg with splitted files, is not possible to embed the *cover.jpg* file into each mp3 file)
+- ~~Thumbnail embedded (due to a bug in ffmpeg with splitted files, is not possible to embed the *cover.jpg* file into each mp3 file)~~ /// done
 
-- Filter special character in youtube video descriptions and name
+- ~~Filter special character in youtube video descriptions and name~~ /// done
 
 [DOWNLOAD SYNTHTUBE](https://github.com/lupastance/batch/releases)
